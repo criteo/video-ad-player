@@ -1,5 +1,5 @@
 {
-  "name": "criteo-video-player",
+  "name": "@criteo/video-player",
   "type": "module",
   "main": "dist/criteo-video-player.es.js",
   "types": "dist/types/index.d.ts",
