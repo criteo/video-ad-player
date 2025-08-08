@@ -1,5 +1,5 @@
 {
-  "name": "criteo-video-player-app",
+  "name": "@criteo/video-player-sample-app",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "criteo-video-player": "file:../.."
+    "@criteo/video-player": "file:../.."
   },
   "devDependencies": {
     "typescript": "^5.5.3",
