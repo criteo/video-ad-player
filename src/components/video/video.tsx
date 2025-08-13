@@ -4,11 +4,19 @@ import { ControlBar } from "../control-bar/control-bar";
 import { FallbackImage } from "../fallback-image/fallback-image";
 import { EventsHandler, sendBeacon } from "../../services/events-handler";
 import { setupAdVerification } from "../../services/omid-js/omid-verification";
+import { ClosedCaption } from "../closed-caption/closed-caption";
+import { selectVideo, getCueText } from "../../services/video-utils";
+import { ClosedCaptionRender } from "../closed-caption/closed-caption-render";
 
 export interface VideoOptions {
   altText: string;
   fallbackImage?: FallbackImageProps;
   maxVolume?: number;
+  ccButtonLabel?: string;
+  targetDimensions?: {
+    width: number;
+    height: number;
+  };
 }
 
 export interface FallbackImageProps {
@@ -24,13 +32,19 @@ interface VideoProps {
 
 export function Video(props: VideoProps) {
   const { vastInformation, options } = props;
-  const { fallbackImage, altText, maxVolume } = options;
+  const { mediaFiles } = vastInformation;
+  const { fallbackImage, altText, maxVolume, targetDimensions, ccButtonLabel } = options;
+  const selectedVideo = selectVideo({ mediaFiles, targetDimensions });
 
   const vidRef = useRef<HTMLVideoElement>(null);
+  const eventsRef = useRef<EventsHandler>(null);
+  const ccRenderRef = useRef<HTMLDivElement>(null);
+
   const [isMuted, setIsMuted] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isBuffering, setIsBuffering] = useState(false);
-  const eventsRef = useRef<EventsHandler>(null);
+  const [isCcActive, setIsCcActive] = useState(true);
+  const [ccContent, setCcContent] = useState<string | null>(null);
 
   const onClickMute = () => {
     if (isMuted) {
@@ -113,7 +127,8 @@ export function Video(props: VideoProps) {
   useEffect(() => {
     async function loadVerificationAndPlay() {
       await registerAdVerification();
-      registerVideoInViewportObserver();
+      registerVideoInViewportObserver();  
+      initializeClosedCaptionState();    
     }
 
     loadVerificationAndPlay();
@@ -135,17 +150,30 @@ export function Video(props: VideoProps) {
     eventsRef.current?.bufferStart();
   };
 
+  const onClickCcButton = (e: MouseEvent) => {
+    e.preventDefault();
+
+    setIsCcActive(!isCcActive);
+    
+    const textTrack = vidRef.current?.textTracks?.[0];
+    setCcContent(getCueText(textTrack));
+  };
+
+  const initializeClosedCaptionState = () => {
+    setIsCcActive(!!selectedVideo.closedCaptionFile);
+  };
+
   return (
     <div class="rm-video-player-container">
       <video
         ref={vidRef}
         class="rm-ad-player"
         muted={isMuted}
-        playsInline
+        playsInline        
         webkit-playsInline
         disablePictureInPicture
-        alt={altText}
-        src={vastInformation.mediaUrl}
+        aria-label={altText}       
+        src={selectedVideo.mediaUrl}
         onTimeUpdate={handleTimeUpdate}
         onEnded={handleTimeEnded}
         onClick={handleClick}
@@ -162,12 +190,25 @@ export function Video(props: VideoProps) {
               optionalRedirectTarget={fallbackImage?.optionalRedirectTarget}
             />
           )}
+        <ClosedCaption
+          closedCaptionFile={selectedVideo.closedCaptionFile}
+          closedCaptionLanguage={selectedVideo.closedCaptionLanguage}
+          setCcContent={setCcContent}
+        />
       </video>
       <ControlBar
         onClickPlayPause={onClickPlayPause}
         onClickMute={onClickMute}
         isMuted={isMuted}
         isPlaying={isPlaying}
+        ccButtonLabel={ccButtonLabel}
+        onClickCcButton={onClickCcButton}
+        isCcActive={isCcActive}
+      />
+      <ClosedCaptionRender
+        ref={ccRenderRef}
+        isCcActive={isCcActive}
+        content={ccContent}
       />
     </div>
   );

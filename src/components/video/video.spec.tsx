@@ -10,7 +10,13 @@ let getByTestId: (id: string) => HTMLElement;
 
 beforeEach(async () => {
   vastInformation = {
-    mediaUrl: "https://example.com/media.mp4",
+    mediaFiles: [
+      {
+        mediaUrl: "https://example.com/media.mp4",
+        closedCaptionFile: "https://example.com/captions.vtt",
+        closedCaptionLanguage: "en",
+      },
+    ],
     clickThroughUrl: "https://example.com",
     beacons: {
       impression: "https://example.com/impression",

@@ -1,4 +1,4 @@
-import { AdVerification, VastInformation } from "./vast-model";
+import { AdVerification, MediaFile, VastInformation } from "./vast-model";
 import { toHttps } from "./vast-utils";
 
 export class VastParser {
@@ -23,8 +23,7 @@ export class VastParser {
   }
 
   private parseFile(data: Document): VastInformation {
-    return {
-      mediaUrl: toHttps(this.queryXMLFile(data, "MediaFile")),
+    return {      
       clickThroughUrl: this.queryXMLFile(data, "ClickThrough"),
       beacons: {
         adFirstQuartile: this.queryXMLFile(
@@ -50,6 +49,7 @@ export class VastParser {
         ),
       },
       adVerifications: this.loadAdVerifications(data),
+      mediaFiles: this.queryMediaFiles(data),      
     };
   }
 
@@ -88,4 +88,53 @@ export class VastParser {
   ): string | undefined {
     return data?.getAttribute(attributeId) ?? undefined;
   }
+
+  queryXMLText(field: Element | null): string | undefined {
+    if (!field || !field.firstChild) {
+      return undefined;
+    }
+    // @ts-ignore
+    return field.firstChild.wholeText.trim();
+  }
+
+  queryMediaFiles(data: Document): MediaFile[] {
+    const mediaFiles: MediaFile[] = [];
+    
+    // Try to find a top-level ClosedCaptionFile
+    const topLevelCCFile = data.querySelector('MediaFiles > ClosedCaptionFiles > ClosedCaptionFile');
+    const mediaFileElements = data.querySelectorAll('MediaFile');
+
+    // Extract top-level closed caption data once if present
+    const topLevelClosedCaptionFile = topLevelCCFile
+      ? this.queryXMLFile(data, 'MediaFiles > ClosedCaptionFiles > ClosedCaptionFile')
+      : undefined;
+    const topLevelClosedCaptionLanguage = topLevelCCFile
+      ? this.queryXMLAttribute(topLevelCCFile, 'language')
+      : undefined;
+
+    mediaFileElements.forEach((field) => {
+      const mediaUrl = toHttps(this.queryXMLText(field));
+      const width = this.queryXMLAttribute(field, 'width');
+      const height = this.queryXMLAttribute(field, 'height');
+      const aspectRatio = width && height ? parseInt(width) / parseInt(height) : undefined;
+
+      // Use top-level CC info if present, else fallback to per-field
+      const closedCaptionFile = topLevelClosedCaptionFile ??
+        this.queryXMLFile(field, 'ClosedCaptionFiles > ClosedCaptionFile');
+      const closedCaptionLanguage = topLevelClosedCaptionLanguage ??
+        this.queryXMLAttribute(field.querySelector('ClosedCaptionFiles > ClosedCaptionFile'), 'language');
+
+      mediaFiles.push({
+        mediaUrl,
+        width,
+        height,
+        aspectRatio,
+        closedCaptionFile,
+        closedCaptionLanguage,
+      });
+    });
+    
+    return mediaFiles;
+  }
+
 }
