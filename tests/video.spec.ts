@@ -8,5 +8,8 @@ test("can load vast and click on button", async ({ page }) => {
   await page.waitForTimeout(2000);
 
   await page.getByTestId("play-button").click();
-  await expect(page.getByTestId("video")).toHaveJSProperty("paused", true);
+  await expect(page.getByTestId("video-element")).toHaveJSProperty(
+    "paused",
+    true
+  );
 });

@@ -4,15 +4,11 @@
   "main": "dist/criteo-video-player.es.js",
   "types": "dist/types/index.d.ts",
   "scripts": {
-    "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview",
+    "serve": "http-server . -p 8080",
     "test": "vitest",
     "test:ui": "vitest --ui",
-    "test:e2e": "npm run build; playwright test"
-  },
-  "dependencies": {
-    "preact": "^10.22.1"
+    "test:e2e": "playwright test"
   },
   "devDependencies": {
     "@playwright/test": "^1.47.1",
@@ -23,6 +19,7 @@
     "@vitest/ui": "^2.1.1",
     "eslint": "^8.57.1",
     "eslint-config-preact": "^1.5.0",
+    "http-server": "^14.1.1",
     "jsdom": "^25.0.1",
     "playwright": "^1.47.1",
     "typescript": "^5.6.2",
@@ -32,5 +29,8 @@
   },
   "eslintConfig": {
     "extends": "preact"
+  },
+  "peerDependencies": {
+    "preact": "^10.22.1"
   }
 }

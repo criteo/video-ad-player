@@ -11,7 +11,9 @@
     <script type="module">
       import { criteoVideoPlayerFromUrl } from "../dist/criteo-video-player.es.js";
 
-      criteoVideoPlayerFromUrl("abcd.xml", "video-player");
+      criteoVideoPlayerFromUrl("./assets/simple_vast.xml", "video-player", {
+        altText: "Test video",
+      });
     </script>
   </body>
 </html>

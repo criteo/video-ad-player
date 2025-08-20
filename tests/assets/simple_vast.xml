@@ -40,7 +40,7 @@
                             <MediaFile id="Criteo_mp4_ABC" delivery="progressive" width="720"
                                 height="406" type="video/mp4" scalable="true"
                                 maintainAspectRatio="true">
-<![CDATA[ http://static.criteo.net/test_video.mp4 ]]>
+<![CDATA[ ./assets/test_video.mp4 ]]>
 </MediaFile>
                         </MediaFiles>
                     </Linear>

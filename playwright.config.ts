@@ -2,7 +2,7 @@ import { defineConfig, devices } from "@playwright/test";
 
 export default defineConfig({
   testDir: "./tests",
-  timeout: 30000,
+  timeout: 10000,
   expect: {
     timeout: 5000,
   },
@@ -10,7 +10,7 @@ export default defineConfig({
   retries: 1,
   reporter: "html",
   use: {
-    baseURL: "http://127.0.0.1:8080/",
+    baseURL: "http://localhost:8080",
     trace: "on-first-retry",
   },
   projects: [
@@ -27,4 +27,11 @@ export default defineConfig({
       use: { ...devices["Desktop Safari"] },
     },
   ],
+  webServer: {
+    command: "npm run serve",
+    url: "http://localhost:8080",
+    reuseExistingServer: !process.env.CI,
+    stdout: "ignore",
+    stderr: "pipe",
+  },
 });
