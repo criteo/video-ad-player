@@ -3,6 +3,8 @@
   "type": "module",
   "main": "dist/criteo-video-player.es.js",
   "types": "dist/types/index.d.ts",
+  "version": "0.0.1",
+  "description": "Lightweight video player with ad support",
   "scripts": {
     "build": "vite build",
     "serve": "http-server . -p 8080",
