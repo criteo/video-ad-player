@@ -34,5 +34,9 @@
   },
   "peerDependencies": {
     "preact": "^10.22.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/criteo/video-ad-player.git"
   }
 }
