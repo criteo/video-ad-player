@@ -2,20 +2,22 @@ name: Publish Package
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
 permissions:
-  id-token: write 
+  id-token: write
   contents: read
 jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: "22"
           registry-url: "https://registry.npmjs.org/"
+      - name: Update npm
+        run: npm install -g npm@latest
       - name: Install dependencies
         run: npm ci
       - name: Install Playwright Browsers
@@ -27,4 +29,4 @@ jobs:
       - name: Run e2e tests
         run: npm run test:e2e
       - name: Publish to NPM
-        run: npm publish
+        run: npm publish --access public
