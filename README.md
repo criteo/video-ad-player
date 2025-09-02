@@ -15,8 +15,19 @@ The package provides two APIs to render your videos.
 
 For each, you should provide a `video element` which should be an HTML element in which you want the video to be rendered. 
 
-To support **viewability measurement**, the IAB Open Measurement SDK (OM SDK) for Web requires two scripts. See the `simple_npm_app` for reference.
-1. Omid-Session-Client - Provided as `sessionClientUrl` in `VideoOptions`.
 
-2. OMID JS library - Provided as `omWebUrl` in `VideoOptions`.
+### Viewability measurement
+To support viewability measurement, the IAB Open Measurement SDK (OM SDK) for Web requires two scripts:
+
+- `omweb-v1.js` – the OMID JS library for the web context.
+- `omid-session-client-v1.js` – used by integration partners to perform ad session activities in the JavaScript layer.
+
+Per IAB requirements, each retailer must obtain their own build of these scripts from the IAB Tech Lab Tools Portal. This ensures the SDK is correctly registered to your organization and remains up to date with the official specification.
+
+**Steps to download your scripts:**
+
+1. Log in or register at the [IAB Tech Lab Tools Portal](https://tools.iabtechlab.com/login).
+2. Navigate to the [Open Measurement SDK for Web](https://iabtechlab.com/standards/open-measurement-sdk/#:~:text=to%20get%20started-,OM%20Web%20Video%20SDK,-OM%20SDK%20Web) section.
+3. Generate and download your **`OMSDK_<YourRetailerName>`** package.
+4. Host the downloaded files in your environment or reference them from your own CDN.
     
