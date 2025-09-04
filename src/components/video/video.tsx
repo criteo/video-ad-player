@@ -54,14 +54,17 @@ export function Video(props: VideoProps) {
   const [isBuffering, setIsBuffering] = useState(false);
   const [isCcActive, setIsCcActive] = useState(true);
   const [ccContent, setCcContent] = useState<string | null>(null);
-
+  
   const onClickMute = () => {
-    if (isMuted) {
-      eventsRef.current?.mute();
-    } else {
-      eventsRef.current?.unmute(maxVolume || 1);
-    }
-    setIsMuted(!isMuted);
+    setIsMuted(prev => {
+      if (prev) {
+        eventsRef.current?.mute();
+      } else {
+        eventsRef.current?.unmute(maxVolume || 1);
+      }
+
+      return !prev;
+    });
   };
 
   const handleTimeUpdate = (event: Event) => {
@@ -138,24 +141,27 @@ export function Video(props: VideoProps) {
   };
 
   useEffect(() => {
-    async function loadVerificationAndPlay() {
+    async function loadVerificationAndPlay() {      
       await registerAdVerification();
-      registerVideoInViewportObserver();  
-      initializeClosedCaptionState();    
+      registerVideoInViewportObserver();
+      initializeClosedCaptionState();
+      registerKeyboardControl();
     }
-
+    
     loadVerificationAndPlay();
   }, []);
 
   const onClickPlayPause = () => {
-    if (isPlaying) {
-      vidRef.current!.pause();
-      eventsRef.current?.pause();
-    } else {
-      vidRef.current!.play();
-      eventsRef.current?.play();
-    }
-    setIsPlaying(!isPlaying);
+    setIsPlaying(prev => {
+      if (prev) {
+        vidRef.current!.pause();
+        eventsRef.current?.pause();
+      } else {
+        vidRef.current!.play();
+        eventsRef.current?.play();
+      }
+      return !prev;
+    });
   };
 
   const handleWaiting = () => {
@@ -163,17 +169,64 @@ export function Video(props: VideoProps) {
     eventsRef.current?.bufferStart();
   };
 
-  const onClickCcButton = (e: MouseEvent) => {
-    e.preventDefault();
+  const onClickCcButton = () => {
+    setIsCcActive(prev => {
+      const next = !prev;
 
-    setIsCcActive(!isCcActive);
-    
-    const textTrack = vidRef.current?.textTracks?.[0];
-    setCcContent(getCueText(textTrack));
+      const textTrack = vidRef.current?.textTracks?.[0];
+      setCcContent(getCueText(textTrack));
+
+      return next;
+    });
   };
 
-  const initializeClosedCaptionState = () => {
+  const initializeClosedCaptionState = () => {    
     setIsCcActive(!!selectedVideo.closedCaptionFile);
+  };
+
+  const getVideoContainer = (): HTMLElement | null => 
+    vidRef.current?.parentElement ?? null;
+
+  const isFocusInside = (container: HTMLElement | null, ae: Element | null) =>
+    !!container && !!ae && (container === ae || container.contains(ae));
+
+  const registerKeyboardControl = () => {
+    const container = getVideoContainer();
+    if (!container) return;
+    container.addEventListener("keydown", handleKeyDown);
+  };
+
+  const handleKeyDown = (e: KeyboardEvent) => {
+    const container = getVideoContainer();
+    const ae = document.activeElement;
+
+    // Only act when focus is inside the video container; let Tab proceed.
+    if (!isFocusInside(container, ae) || e.key === "Tab") return;
+
+    // Normalize key values
+    const key = e.code || e.key;               // 'Space', 'KeyM', 'KeyC', etc.
+    const keyLower = (e.key || "").toLowerCase(); // ' ', 'm', 'c', etc.
+
+    // Spacebar: only when the <video> itself is focused
+    if (ae === vidRef.current && (key === "Space" || e.key === " ")) {
+      e.preventDefault();
+      onClickPlayPause();
+      return;
+    }
+
+    // M: mute/unmute (container or any child focused)
+    if (key === "KeyM" || keyLower === "m") {
+      e.preventDefault();
+      onClickMute();
+      return;
+    }
+
+    // C: toggle captions (container or any child focused)
+    if (key === "KeyC" || keyLower === "c") {
+      e.preventDefault();
+      onClickCcButton();
+      return;
+    }
   };
 
   return (
@@ -193,6 +246,7 @@ export function Video(props: VideoProps) {
         onWaiting={handleWaiting}
         data-testid="video-element"
         volume={maxVolume}
+        tabIndex={0}
       >
         {fallbackImage?.src &&
           fallbackImage?.optionalVideoRedirectUrl &&
