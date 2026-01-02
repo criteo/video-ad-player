@@ -16,6 +16,7 @@ export default defineConfig({
       entry: "./src/index.ts",
       name: "criteo-video-player",
       fileName: (format) => `criteo-video-player.${format}.js`,
+      cssFileName: "style",
     },
   },
   test: {
