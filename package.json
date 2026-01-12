@@ -33,7 +33,7 @@
     "extends": "preact"
   },
   "peerDependencies": {
-    "preact": "^10.22.1"
+    "preact": "^10.28.2"
   },
   "repository": {
     "type": "git",
