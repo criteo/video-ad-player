@@ -267,7 +267,10 @@ export function Video(props: VideoProps) {
     }
 
     // C: toggle captions (container or any child focused)
-    if (key === "KeyC" || keyLower === "c") {
+    if (
+      (key === "KeyC" || keyLower === "c") &&
+      selectedVideo.closedCaptionFile
+    ) {
       e.preventDefault();
       onClickCcButton(e);
       return;
@@ -320,6 +323,7 @@ export function Video(props: VideoProps) {
         onClickMute={onClickMute}
         isMuted={isMuted}
         isPlaying={isPlaying}
+        showCcButton={!!selectedVideo.closedCaptionFile}
         ccButtonLabel={ccButtonLabel}
         onClickCcButton={onClickCcButton}
         isCcActive={isCcActive}

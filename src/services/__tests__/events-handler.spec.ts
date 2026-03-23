@@ -12,6 +12,7 @@ Object.defineProperty(navigator, "sendBeacon", {
 
 const createMockVastInformation = (): VastInformation => ({
   mediaFiles: [],
+  adVerifications: [],
   beacons: {
     impression: "https://example.com/impression",
     adStarted: "https://example.com/start",
@@ -24,6 +25,7 @@ const createMockVastInformation = (): VastInformation => ({
     mute: "https://example.com/mute",
     unmute: "https://example.com/unmute",
     clickThrough: "https://example.com/click",
+    verificationNotExecuted: "https://example.com/verification-not-executed",
   },
   clickThroughUrl: "https://example.com/clickthrough",
 });
