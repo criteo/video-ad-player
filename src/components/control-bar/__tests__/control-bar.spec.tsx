@@ -33,5 +33,12 @@ describe("ControlBar", () => {
     fireEvent.click(screen.getByRole("button", { name: "Closed Captions Button" }));
     expect(onClickCcButton).toHaveBeenCalledTimes(1);
   });
+
+  it("does not render the CC button when showCcButton is false", () => {
+    render(<ControlBar {...defaultProps} showCcButton={false} />);
+    expect(
+      screen.queryByRole("button", { name: "Closed Captions Button" })
+    ).toBeNull();
+  });
 });
 

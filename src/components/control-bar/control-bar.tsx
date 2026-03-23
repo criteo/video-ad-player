@@ -11,6 +11,7 @@ interface ControlBarProps {
   onClickPlayPause: () => void;
   isPlaying: boolean;
   isMuted: boolean;
+  showCcButton?: boolean;
   ccButtonLabel?: string;    
   onClickCcButton: (e: JSX.TargetedMouseEvent<HTMLButtonElement>) => void;
   isCcActive: boolean;
@@ -21,6 +22,7 @@ export function ControlBar({
   onClickPlayPause,
   isMuted,
   isPlaying,
+  showCcButton = true,
   ccButtonLabel,
   onClickCcButton,
   isCcActive
@@ -49,6 +51,7 @@ export function ControlBar({
             {isMuted ? <LowVolumeIcon /> : <MutedIcon />}
           </button>
         </div>
+        {showCcButton ? (
         <div class="cc-container">
           <button
             class={`cc-btn ${isCcActive ? "active" : "disabled"}`}
@@ -58,6 +61,7 @@ export function ControlBar({
             <CloseCaptionIcon />
           </button>          
         </div>
+        ) : null}
       </div>
     </div>
   );
