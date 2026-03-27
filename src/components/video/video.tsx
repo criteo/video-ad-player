@@ -71,6 +71,7 @@ export function Video(props: VideoProps) {
   const [isBuffering, setIsBuffering] = useState(false);
   const [isCcActive, setIsCcActive] = useState(true);
   const [ccContent, setCcContent] = useState<string | null>(null);
+  const [isVideoLoaded, setIsVideoLoaded] = useState(false);
   
   const onClickMute = () => {
     setIsMuted(prev => {
@@ -307,6 +308,7 @@ export function Video(props: VideoProps) {
         onClick={handleClick}
         onWaiting={handleWaiting}
         onError={handleVideoError}
+        onLoadedData={() => setIsVideoLoaded(true)}
         data-testid="video-element"
         volume={maxVolume}
         tabIndex={0}
@@ -318,16 +320,18 @@ export function Video(props: VideoProps) {
           setCcContent={setCcContent}
         />
       </video>
-      <ControlBar
-        onClickPlayPause={onClickPlayPause}
-        onClickMute={onClickMute}
-        isMuted={isMuted}
-        isPlaying={isPlaying}
-        showCcButton={!!selectedVideo.closedCaptionFile}
-        ccButtonLabel={ccButtonLabel}
-        onClickCcButton={onClickCcButton}
-        isCcActive={isCcActive}
-      />
+      {isVideoLoaded && (
+        <ControlBar
+          onClickPlayPause={onClickPlayPause}
+          onClickMute={onClickMute}
+          isMuted={isMuted}
+          isPlaying={isPlaying}
+          showCcButton={!!selectedVideo.closedCaptionFile}
+          ccButtonLabel={ccButtonLabel}
+          onClickCcButton={onClickCcButton}
+          isCcActive={isCcActive}
+        />
+      )}
       <ClosedCaptionRender        
         isCcActive={isCcActive}
         content={ccContent}

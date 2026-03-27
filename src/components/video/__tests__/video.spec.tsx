@@ -73,7 +73,9 @@ beforeEach(async () => {
 
   getByTestId = renderResult.getByTestId;
   videoElement = getByTestId("video-element") as HTMLVideoElement;
-  
+
+  // JSDOM doesn't load real media, so manually fire loadeddata to render the ControlBar.
+  fireEvent(videoElement, new Event("loadeddata"));
 
   await waitFor(() => {
     expect(getByTestId("play-button")).toBeInTheDocument();

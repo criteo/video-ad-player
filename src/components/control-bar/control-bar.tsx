@@ -48,7 +48,7 @@ export function ControlBar({
             data-testid="mute-button"
             aria-label={isMuted ? "Unmute" : "Mute"}
           >
-            {isMuted ? <LowVolumeIcon /> : <MutedIcon />}
+            {isMuted ? <MutedIcon /> : <LowVolumeIcon />}
           </button>
         </div>
         {showCcButton ? (
